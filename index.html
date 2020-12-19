@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+  </head>
+  <body>
+    <h1 style="text-align: center">Please enter the data</h1>
+
+    <form name="calcForm" class="container">
+      <div class="row">
+        <label class="labelField">num 1</label>
+        <input class="inputField" type="number" name="num1" />
+      </div>
+      <div class="row">
+        <label class="labelField">operator</label>
+        <input class="inputField" type="text" name="op" />
+      </div>
+      <div class="row">
+        <label class="labelField">num 2</label>
+        <input class="inputField" type="number" name="num2" />
+      </div>
+      <button type="submit" id="submit" class="btn">submit</button>
+
+      <h5 id="result"></h5>
+    </form>
+
+    <script>
+      document.getElementById('submit').addEventListener('click', function (e) {
+        e.preventDefault();
+        let registerForm = document.forms['calcForm'];
+        let num1 = registerForm.elements['num1'].value;
+        let op = registerForm.elements['op'].value;
+        let num2 = registerForm.elements['num2'].value;
+        let calc = JSON.stringify({
+          num1: num1,
+          op: op,
+          num2: num2,
+        });
+        let request = new XMLHttpRequest();
+        request.open('POST', '/9b', true);
+        request.setRequestHeader('Content-Type', 'application/json');
+        request.addEventListener('load', function () {
+          const receivedData = JSON.parse(request.response);
+          const number1 = parseInt(receivedData.num1);
+          const number2 = parseInt(receivedData.num2);
+          const op = receivedData.op;
+          let result;
+
+          switch (op) {
+            case '+':
+              result = number1 + number2;
+              break;
+            case '-':
+              result = number1 - number2;
+              break;
+            case '*':
+              result = number1 * number2;
+              break;
+            case '/':
+              console.log(number2);
+              if (number2 === 0) {
+                result = 'Division by 0 is not allowed';
+                break;
+              }
+              result = number1 / number2;
+              break;
+            default:
+              registerForm.reset();
+              result = 'Please enter a valid operator';
+          }
+
+          console.log('result: ' + result);
+          document.getElementById('result').innerHTML = 'result: ' + result;
+        });
+        request.send(calc);
+      });
+    </script>
+  </body>
+</html>
